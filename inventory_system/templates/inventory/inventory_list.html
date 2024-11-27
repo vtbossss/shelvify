@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory List</title>
+</head>
+<body>
+    <h1>Inventory List</h1>
+    <a href="{% url 'add_inventory' %}">Add New Item</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Section</th>
+                <th>Updated By</th>
+                {% if user.role == 'Admin' %}
+                    <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory_items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.section }}</td>
+                    <td>{{ item.updated_by.username }}</td>
+                    {% if user.role == 'Admin' %}
+                        <td>
+                            <a href="{% url 'edit_inventory' item.id %}">Edit</a>
+                            <a href="{% url 'delete_inventory' item.id %}">Delete</a>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>

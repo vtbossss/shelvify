@@ -1,0 +1,61 @@
+# Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Django-related
+*.log
+*.pot
+*.pyc
+*.pyo
+__pycache__/
+db.sqlite3
+*.sqlite3
+
+# Django settings file
+*.env
+*.local
+*.config
+*.ini
+*.json
+*.yaml
+
+# Virtualenv
+.venv/
+venv/
+env/
+env.bak/
+venv.bak/
+
+# Node.js (if using frontend with npm or yarn)
+node_modules/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Media and static files (generated files)
+media/
+static/
+
+# JWT Token cookies
+*.cookie
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Backup files
+*.bak
+*.swp
+*.swo
+
+# Python-specific
+*.egg-info/
+.eggs/
+dist/
+build/

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}</h1>
+
+    {% if role == 'Admin' %}
+        <h2>Admin Dashboard</h2>
+        <p>Total Users: {{ total_users }}</p>
+        <p>Total Inventory Items: {{ total_inventory_items }}</p>
+        <a href="{% url 'inventory_list' %}">View Inventory</a>
+        <a href="{% url 'user_management' %}">User Management</a>
+    {% elif role == 'Manager' %}
+        <h2>Manager Dashboard</h2>
+        <ul>
+            {% for item in managed_inventory %}
+                <li>{{ item.name }} - {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+    {% elif role == 'Staff' %}
+        <h2>Staff Dashboard</h2>
+        <ul>
+            {% for item in section_inventory %}
+                <li>{{ item.name }} - {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Invalid role. Please log in again.</p>
+    {% endif %}
+
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
