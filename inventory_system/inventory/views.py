@@ -7,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, Inventory
+from .models import Inventory
 from .serializers import UserSerializer, InventorySerializer
 from .permissions import IsAdmin, IsManager, IsStaff
 from .forms import InventoryForm, UserForm
 
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 # User Management View (API)
 class UserManagementView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -94,6 +97,7 @@ def login_view(request):
 
 # User Management (Admin-only view)
 def user_management_view(request):
+    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
         return redirect('permission_denied')
     
@@ -102,6 +106,7 @@ def user_management_view(request):
 
 # Inventory List (View for all users)
 def inventory_list_view(request):
+    
     if not request.user.is_authenticated:
         return redirect('login')
     
@@ -144,6 +149,7 @@ def logout_view(request):
 
 # Home View (Displays information based on user role)
 def home_view(request):
+    User = get_user_model()
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect to login if not authenticated
     
@@ -184,6 +190,7 @@ def home_view(request):
 
 # Edit User View
 def edit_user(request, user_id):
+    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
         return redirect('permission_denied')  # Redirect if not an admin
     
@@ -201,6 +208,7 @@ def edit_user(request, user_id):
 
 # Delete User View
 def delete_user(request, user_id):
+    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
         return redirect('permission_denied')  # Redirect if not an admin
     
@@ -212,3 +220,78 @@ def delete_user(request, user_id):
     except User.DoesNotExist:
         messages.error(request, 'User not found.')
         return redirect('user_management_template')  # Redirect to user management page
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+
+# Check if the user is an Admin
+def is_admin(user):
+    return user.is_authenticated and user.role == 'Admin'
+
+@login_required
+@user_passes_test(is_admin)
+def user_management_view(request):
+    User = get_user_model()
+    users = User.objects.all()
+    return render(request, 'inventory/user_management.html', {'users': users})
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Inventory
+from .forms import InventoryForm
+
+@login_required
+def edit_inventory_view(request, item_id):
+    if request.user.role != 'Admin':
+        return redirect('inventory_list')  # Only Admins can edit
+
+    item = get_object_or_404(Inventory, id=item_id)
+    if request.method == 'POST':
+        form = InventoryForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('inventory_list')
+    else:
+        form = InventoryForm(instance=item)
+
+    return render(request, 'inventory/edit_inventory.html', {'form': form, 'item': item})
+
+@login_required
+def delete_inventory_view(request, item_id):
+    if request.user.role != 'Admin':
+        return redirect('inventory_list')  # Only Admins can delete
+
+    item = get_object_or_404(Inventory, id=item_id)
+    if request.method == 'POST':  # Confirm deletion
+        item.delete()
+        return redirect('inventory_list')
+
+    return render(request, 'inventory/delete_inventory.html', {'item': item})
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import RegistrationForm
+from django.contrib.auth.models import User
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # The form already handles saving and setting the password
+            messages.success(request, f'User {user.username} created successfully. You can update the role from the admin panel.')
+            return redirect('login')  # Redirect to login page after successful registration
+        else:
+            # If the form is not valid, it will automatically show the errors in the template
+            messages.error(request, 'There was an error with the registration form.')
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'inventory/register.html', {'form': form})
+
+

@@ -1,6 +1,19 @@
 # inventory/models.py
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+
+class CustomUserManager(UserManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)  # Filter for active users
+
+    def get_admin_users(self):
+        return self.get_queryset().filter(role='Admin')
+
+    def get_manager_users(self):
+        return self.get_queryset().filter(role='Manager')
+
+    def get_staff_users(self):
+        return self.get_queryset().filter(role='Staff')
 
 
 class User(AbstractUser):
@@ -10,6 +23,9 @@ class User(AbstractUser):
         ('Staff', 'Staff'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Staff')
+
+    # Set default manager
+    objects = CustomUserManager()
 
     def save(self, *args, **kwargs):
         if self.is_superuser:
