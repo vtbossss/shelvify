@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shelvify{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Dark Mode Background */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar styling for dark mode */
+        nav.navbar {
+            background-color: #1f1f1f; /* Dark navbar */
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff; /* White text for brand */
+        }
+
+        .navbar-nav .nav-link {
+            padding: 10px 15px;
+            font-weight: 600;
+            color: #b0b0b0; /* Light gray text */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #f1f1f1; /* Lighter text color on hover */
+        }
+
+        .navbar-nav .nav-item.active .nav-link {
+            font-weight: bold;
+            color: #007bff !important; /* Highlight active link */
+        }
+
+        /* Content container styling */
+        .content-container {
+            padding: 20px;
+            background-color: #1f1f1f; /* Dark background for content */
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .alert {
+            border-radius: 5px;
+            color: #121212; /* Dark text for alerts */
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: #1f1f1f; /* Dark footer */
+            color: #b0b0b0; /* Light text for footer */
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        /* Button styling */
+        .btn {
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Primary button color */
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .alert {
+            background-color: #f44336; /* Red alert background */
+            color: white;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">Shelvify</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Home link -->
+                    <li class="nav-item {% if request.path == '/' or request.path == '/home/' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    
+                    <!-- Inventory link -->
+                    <li class="nav-item {% if request.path|slice:":10" == '/inventory' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'inventory_list' %}">Inventory</a>
+                    </li>
+                    
+                    <!-- User Management link (only for Admins) -->
+                    {% if user.role == 'Admin' %}
+                    <li class="nav-item {% if request.path|slice:":16" == '/user-management' %}active{% endif %}">
+                        <a class="nav-link" href="{% url 'user_management_template' %}">User Management</a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- Login/Logout/Register links -->
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- Main Content -->
+    <div class="content-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; {{ current_year }} Inventory Management. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

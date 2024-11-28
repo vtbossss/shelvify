@@ -1,116 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory List - Inventory Management</title>
+{% extends "inventory/base.html" %}
 
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}Inventory List - Inventory Management{% endblock %}
 
-    <!-- Google Fonts for typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .table th, .table td {
-            text-align: center;
-        }
-        .btn-add, .btn-back, .btn-edit, .btn-delete {
-            margin: 5px;
-        }
-        .btn-add {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-add:hover {
-            background-color: #218838;
-        }
-        .btn-edit, .btn-delete {
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        .btn-edit {
-            background-color: #ffc107;
-        }
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-        }
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>Inventory List</h1>
-
-    <!-- Add New Item Button (Only visible to Admin) -->
-    <div class="mb-3">
-        <a href="{% url 'add_inventory' %}" class="btn btn-add">Add New Item</a>
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Inventory List</h1>
+    
+    {% if user.role == 'Admin' %}
+    <div class="mb-4">
+        <a href="{% url 'add_inventory' %}" class="btn btn-primary">Add New Item</a>
     </div>
+    {% endif %}
 
-    <!-- Inventory Table -->
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Section</th>
-                <th>Updated By</th>
-                {% if user.role == 'Admin' %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Section</th>
+                    {% if user.role == 'Admin' or user.role == 'Manager' %}
                     <th>Actions</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in inventory_items %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_items %}
                 <tr>
                     <td>{{ item.name }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.section }}</td>
-                    <td>{{ item.updated_by.username }}</td>
-                    {% if user.role == 'Admin' %}
-                        <td>
-                            <a href="{% url 'edit_inventory' item.id %}" class="btn btn-edit">Edit</a>
-                            <a href="{% url 'delete_inventory' item.id %}" class="btn btn-delete">Delete</a>
-                        </td>
+                    {% if user.role == 'Admin' or user.role == 'Manager' %}
+                    <td>
+                        {% if user.role == 'Admin' %}
+                        <a href="{% url 'edit_inventory' item.id %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_inventory' item.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                        {% elif user.role == 'Manager' %}
+                        <a href="{% url 'edit_inventory' item.id %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        {% endif %}
+                    </td>
                     {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Back to Home Button -->
     <div class="text-center mt-3">
-        <a href="{% url 'home' %}" class="btn btn-back btn-secondary">Back to Home</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
     </div>
 </div>
+{% endblock %}
 
-<!-- Bootstrap JS, Popper.js, and jQuery CDN -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+{% block extra_head %}
+<style>
+    /* Table Styles */
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #343a40 !important; /* Darken odd rows */
+    }
 
-</body>
-</html>
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #444 !important; /* Darken even rows */
+    }
+
+    .table-bordered th, .table-bordered td {
+        border-color: #dee2e6 !important;
+        color: #fff !important; /* Ensure text is white on dark mode */
+    }
+
+    .table-dark th {
+        background-color: #212529 !important;
+        color: #fff !important;
+    }
+
+    .table-dark tbody tr {
+        background-color: #343a40 !important;
+    }
+
+    .btn-primary {
+        background-color: #007bff !important;
+        border-color: #007bff !important;
+    }
+
+    .btn-warning {
+        background-color: #ffc107 !important;
+        border-color: #ffc107 !important;
+    }
+
+    .btn-danger {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+    }
+
+    .btn-sm {
+        font-size: 14px !important;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+</style>
+{% endblock %}

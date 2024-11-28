@@ -1,0 +1,101 @@
+{% extends "inventory/base.html" %}
+
+{% block title %}Welcome - Inventory Management{% endblock %}
+
+{% block content %}
+<!-- Main Container -->
+<div class="container-fluid d-flex justify-content-center align-items-center vh-100 bg-gradient">
+    <!-- Welcome Card -->
+    <div class="card shadow-lg p-5 text-white" style="max-width: 600px; width: 100%; border-radius: 15px; background: rgba(0, 0, 0, 0.7);">
+        <div class="card-body text-center">
+            <h1 class="display-4 font-weight-bold mb-4">Welcome to Shelvify</h1>
+            <p class="lead mb-5">Manage your inventory with ease. Stay on top of your stock, streamline your processes, and grow your business with us!</p>
+
+            <!-- Call to Action Links -->
+            <div class="mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg mr-3" style="border-radius: 30px; padding: 15px 30px; font-size: 18px;">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg" style="border-radius: 30px; padding: 15px 30px; font-size: 18px;">Register</a>
+            </div>
+
+            <!-- Option to Register if Not Logged In -->
+            <p class="mt-4 text-light">New here? <a href="{% url 'register' %}" class="text-light font-weight-bold">Create an account</a> to get started!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Gradient Background */
+    .bg-gradient {
+        background: linear-gradient(to right, #4e73df, #1cc88a) !important;
+    }
+
+    /* Main Text Styles */
+    .display-4 {
+        font-size: 3.5rem;
+        font-weight: 700;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+        font-weight: 300;
+    }
+
+    /* Card Styling */
+    .card {
+        background: rgba(0, 0, 0, 0.7) !important;
+        border-radius: 20px;
+    }
+
+    .card-body {
+        text-align: center;
+    }
+
+    /* Button Styling */
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+
+    .btn-outline-light {
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+    .btn-outline-light:hover {
+        background-color: #ffffff;
+        color: #212529;
+    }
+
+    /* Text Styling for Links */
+    .text-light {
+        color: #f8f9fa !important;
+    }
+
+    .text-light:hover {
+        color: #ffffff;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .display-4 {
+            font-size: 2.5rem;
+        }
+
+        .lead {
+            font-size: 1.1rem;
+        }
+
+        .btn-lg {
+            font-size: 16px;
+            padding: 12px 25px;
+        }
+    }
+</style>
+{% endblock %}

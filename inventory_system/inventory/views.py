@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 # User Management View (API)
 class UserManagementView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated,IsAdmin]
 
     def get(self, request):
         users = User.objects.all()
@@ -39,41 +39,70 @@ class UserManagementView(APIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # Inventory View (API)
+from rest_framework import permissions
+
 class InventoryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Admin can view all items, Managers and Staff can view their section
-        if request.user.role == 'Admin':
+        # Admin, Manager, and Staff can view all items
+        if request.user.role in ['Admin', 'Manager', 'Staff']:
             items = Inventory.objects.all()
-        elif request.user.role == 'Manager':
-            items = Inventory.objects.filter(section=request.user.username)  # Can filter by section
         else:
-            items = Inventory.objects.filter(section=request.user.username)  # Same for Staff
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = InventorySerializer(items, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # Only Admins can add inventory items
         if request.user.role != 'Admin':
-            return Response({'error': 'Only Admins can add inventory items'}, status=403)
+            return Response({'error': 'Only Admins can add inventory items'}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = InventorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(updated_by=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        # Managers can update inventory items, but not add or delete
+        if request.user.role not in ['Admin', 'Manager']:
+            return Response({'error': 'Only Admins and Managers can update items'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            item = Inventory.objects.get(pk=pk)
+        except Inventory.DoesNotExist:
+            return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Ensure Managers cannot update restricted fields
+        if request.user.role == 'Manager' and 'updated_by' in request.data:
+            return Response({'error': 'Managers cannot modify the "updated_by" field'}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = InventorySerializer(item, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save(updated_by=request.user)
+            return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # Only Admins can delete items
         if request.user.role != 'Admin':
-            return Response({'error': 'Only Admins can delete items'}, status=403)
+            return Response({'error': 'Only Admins can delete items'}, status=status.HTTP_403_FORBIDDEN)
+
         try:
             item = Inventory.objects.get(pk=pk)
             item.delete()
             return Response({'message': 'Item deleted successfully!'})
         except Inventory.DoesNotExist:
-            return Response({'error': 'Item not found'}, status=404)
+            return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 # Login View
 def login_view(request):
+    User = get_user_model()
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -113,7 +142,7 @@ def inventory_list_view(request):
     if request.user.role == 'Admin':
         items = Inventory.objects.all()
     elif request.user.role == 'Manager' or request.user.role == 'Staff':
-        items = Inventory.objects.filter(section=request.user.username)
+        items = Inventory.objects.all()
     
     return render(request, 'inventory/inventory_list.html', {
         'inventory_items': items,
@@ -151,43 +180,36 @@ def logout_view(request):
 def home_view(request):
     User = get_user_model()
     if not request.user.is_authenticated:
-        return redirect('login')  # Redirect to login if not authenticated
+        return render(request,'inventory/basichome.html')  # Redirect to login if not authenticated
     
     # Logic for different roles
     if request.user.role == 'Admin':
-        # Admin sees a full overview of users and inventory
         total_users = User.objects.count()
         total_inventory_items = Inventory.objects.count()
         return render(request, 'inventory/home.html', {
             'role': 'Admin',
             'total_users': total_users,
             'total_inventory_items': total_inventory_items,
-            'user': request.user  # Pass the user object to the template
+            'user': request.user
         })
-    
     elif request.user.role == 'Manager':
-        # Manager sees their assigned inventory items
-        managed_inventory = Inventory.objects.filter(section=request.user.username)
+        managed_inventory = Inventory.objects.all()
+        total_inventory_items = Inventory.objects.count()
         return render(request, 'inventory/home.html', {
             'role': 'Manager',
             'managed_inventory': managed_inventory,
-            'user': request.user  # Pass the user object to the template
+            'total_inventory_items': total_inventory_items,
+            'user': request.user
         })
-    
     elif request.user.role == 'Staff':
-        # Staff sees a filtered view of inventory items for their section
-        section_inventory = Inventory.objects.filter(section=request.user.username)
+        staff_inventory = Inventory.objects.all()
         return render(request, 'inventory/home.html', {
             'role': 'Staff',
-            'section_inventory': section_inventory,
-            'user': request.user  # Pass the user object to the template
+            'section_inventory': staff_inventory,
+            'user': request.user
         })
-    
     else:
-        # If the role is unexpected, redirect to login
         return redirect('login')
-
-
 # Edit User View
 def edit_user(request, user_id):
     User = get_user_model()
@@ -207,6 +229,7 @@ def edit_user(request, user_id):
     return render(request, 'inventory/edit_user.html', {'form': form, 'user': user})
 
 # Delete User View
+
 def delete_user(request, user_id):
     User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
@@ -247,8 +270,9 @@ from .forms import InventoryForm
 
 @login_required
 def edit_inventory_view(request, item_id):
-    if request.user.role != 'Admin':
-        return redirect('inventory_list')  # Only Admins can edit
+    # Allow both Admins and Managers to edit inventory
+    if request.user.role not in ['Admin', 'Manager']:
+        return redirect('inventory_list')  # Only Admins and Managers can edit
 
     item = get_object_or_404(Inventory, id=item_id)
     if request.method == 'POST':
@@ -260,6 +284,7 @@ def edit_inventory_view(request, item_id):
         form = InventoryForm(instance=item)
 
     return render(request, 'inventory/edit_inventory.html', {'form': form, 'item': item})
+
 
 @login_required
 def delete_inventory_view(request, item_id):
@@ -279,13 +304,20 @@ from django.contrib import messages
 from .forms import RegistrationForm
 from django.contrib.auth.models import User
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import RegistrationForm
+
 def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()  # The form already handles saving and setting the password
+            
             messages.success(request, f'User {user.username} created successfully. You can update the role from the admin panel.')
-            return redirect('login')  # Redirect to login page after successful registration
+            
+            # Redirect to login page or another page after successful registration
+            return redirect('login')  # Change 'login' to the appropriate URL name for your login page
         else:
             # If the form is not valid, it will automatically show the errors in the template
             messages.error(request, 'There was an error with the registration form.')

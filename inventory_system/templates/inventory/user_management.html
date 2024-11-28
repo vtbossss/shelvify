@@ -1,68 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management</title>
+{% extends "inventory/base.html" %}
 
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}User Management - Inventory Management{% endblock %}
 
-    <!-- Google Fonts for typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center my-4">User Management</h1>
 
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .table th, .table td {
-            text-align: center;
-        }
-        .btn-edit, .btn-delete {
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        .btn-edit {
-            background-color: #ffc107;
-        }
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-        }
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
-        .btn-back {
-            margin-top: 20px;
-            display: block;
-            width: 150px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>User Management</h1>
-
-    <!-- User Table -->
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -73,28 +16,141 @@
         </thead>
         <tbody>
             {% for user in users %}
-                <tr>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.role }}</td>
-                    <td>
-                        <a href="{% url 'edit_user' user.id %}" class="btn btn-edit">Edit</a>
-                        <a href="{% url 'delete_user' user.id %}" class="btn btn-delete">Delete</a>
-                    </td>
-                </tr>
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                    {% if user.role != 'Admin' %}
+                    <!-- Edit Button -->
+                    <a href="{% url 'edit_user' user.id %}" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                    <!-- Delete Button with Confirmation -->
+                    <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirmDelete(event, '{{ user.username }}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Back to Home Button -->
-    <div class="text-center">
-        <a href="{% url 'home' %}" class="btn btn-back btn-secondary">Back to Home</a>
+    <div class="text-center mt-3">
+        <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-home"></i> Back to Home</a>
     </div>
 </div>
 
-<!-- Bootstrap JS, Popper.js, and jQuery CDN -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<!-- Confirmation Modal -->
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Are you sure you want to delete this user?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="deleteLink" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-</body>
-</html>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Table Styles */
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #343a40 !important; /* Darken odd rows */
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #444 !important; /* Darken even rows */
+    }
+
+    .table-bordered th, .table-bordered td {
+        border-color: #dee2e6 !important;
+        color: #fff !important; /* Ensure text is white on dark mode */
+    }
+
+    .table-dark th {
+        background-color: #212529 !important;
+        color: #fff !important;
+    }
+
+    .table-dark tbody tr {
+        background-color: #343a40 !important;
+    }
+
+    .btn-info {
+        background-color: #17a2b8 !important;
+        border-color: #17a2b8 !important;
+    }
+
+    .btn-danger {
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+    }
+
+    .btn-sm {
+        font-size: 14px !important;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    /* Modal styles */
+    .modal-dialog {
+        margin: 100px auto;
+        max-width: 500px;
+    }
+
+    .modal-content {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(event, username) {
+        event.preventDefault();  // Prevent the default link action
+
+        // Show confirmation modal using Bootstrap's modal API
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'), {
+            keyboard: false
+        });
+        deleteModal.show();
+
+        // Update the modal message and delete link
+        document.getElementById('modalMessage').innerText = `Are you sure you want to delete the user "${username}"?`;
+        document.getElementById('deleteLink').href = event.target.href;
+    }
+
+    // Bootstrap modal initialization (if using Bootstrap's modal JS functionality)
+    $('#deleteModal').on('hidden.bs.modal', function () {
+        document.getElementById('deleteLink').href = ''; // Clear the delete link after modal is closed
+    });
+</script>
+{% endblock %}
