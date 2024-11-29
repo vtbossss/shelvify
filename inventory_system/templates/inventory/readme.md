@@ -1,3 +1,6 @@
+# **Templates Directory - Shelvify Inventory Management System**
+
+This directory contains the HTML templates used in the **Shelvify Inventory Management System**. These templates are responsible for rendering the front-end views of the application, providing a user-friendly interface for interacting with the inventory system.
 
 ---
 
