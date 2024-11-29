@@ -8,26 +8,96 @@
     <!-- Card for the form section -->
     <div class="card shadow-sm">
         <!-- Card header with title -->
-        <div class="card-header bg-primary text-white text-center">
+        <div class="card-header bg-dark text-white text-center">
             <h2>Add New Inventory Item</h2>  <!-- Heading for the page -->
         </div>
         <!-- Card body with form content -->
-        <div class="card-body">
+        <div class="card-body bg-secondary text-white">
             <!-- Form to add a new inventory item, using POST method -->
             <form method="POST">
                 {% csrf_token %}  <!-- CSRF token for security -->
                 <!-- Inventory form fields rendered as paragraphs -->
                 <div class="mb-3">
-                    {{ form.as_p }}  <!-- Render form fields dynamically -->
+                    <div class="form-fields">
+                        {{ form.as_p }}  <!-- Render form fields dynamically -->
+                    </div>
                 </div>
                 <!-- Submit button to add the item -->
                 <button type="submit" class="btn btn-success w-100">Add Item</button>
             </form>
             <!-- Back button to go to the inventory list page -->
             <div class="text-center mt-4">
-                <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back to Inventory List</a>
+                <a href="{% url 'inventory_list' %}" class="btn btn-light">Back to Inventory List</a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Dark Theme Styles */
+
+    /* Card Header Styles */
+    .card-header {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Card Body Styling */
+    .card-body {
+        background-color: #343a40; /* Dark grey background */
+        color: #f8f9fa; /* Light text color */
+        border-radius: 5px;
+        padding: 20px;
+    }
+
+    /* Form Field Styling */
+    .form-fields p {
+        color: #f8f9fa; /* Light color for form field text */
+        font-size: 16px;
+    }
+
+    /* Input Fields */
+    input, select, textarea {
+        background-color: #495057; /* Dark input field */
+        color: #f8f9fa; /* Light text */
+        border: 1px solid #ced4da; /* Slightly light border */
+        border-radius: 5px;
+        padding: 10px;
+        width: 100%;
+    }
+
+    /* Input Hover and Focus */
+    input:hover, select:hover, textarea:hover,
+    input:focus, select:focus, textarea:focus {
+        background-color: #6c757d; /* Slightly lighter for hover/focus */
+        outline: none;
+        border-color: #adb5bd; /* Light border on focus */
+    }
+
+    /* Button Styles */
+    .btn-success {
+        background-color: #28a745; /* Bright green */
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+
+    .btn-light {
+        background-color: #adb5bd; /* Light button */
+        color: #343a40; /* Dark text */
+    }
+
+    .btn-light:hover {
+        background-color: #868e96; /* Slightly darker grey */
+    }
+
+    /* General Text Styling */
+    .text-white {
+        color: #f8f9fa !important; /* Ensure text is bright white */
+    }
+</style>
 {% endblock %}

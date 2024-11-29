@@ -45,10 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',  # Django Rest Framework for API handling
     'inventory',  # Your custom app for inventory management
-    'rest_framework_simplejwt',  # JWT authentication for API security
+    'rest_framework_simplejwt',# JWT authentication for API security
+    'axes'# for rate limiting
 ]
 
 MIDDLEWARE = [
+    'axes.middleware.AxesMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -165,7 +167,7 @@ REST_FRAMEWORK = {
 # ==============================
 
 # Use a custom user model from the 'inventory' app
-AUTH_USER_MODEL = 'inventory.User'
+AUTH_USER_MODEL = 'inventory.User' # Specify the custom user model
 
 
 # ==============================
@@ -190,3 +192,19 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Configure other session settings to ensure compatibility with JWT
 SESSION_COOKIE_AGE = 3600  # Cookie expiration time (in seconds)
 SESSION_COOKIE_HTTPONLY = True  # Made the session cookie HTTP-only for security
+
+SECURE_BROWSER_XSS_FILTER = True # Helps prevent XSS attacks by enabling browser filtering.
+SECURE_CONTENT_TYPE_NOSNIFF = True # Protects against MIME-type sniffing, enforcing correct content type interpretation by the browser.
+
+X_FRAME_OPTIONS = 'DENY' # Prevents clickjacking attacks by denying framing of the site
+
+SESSION_COOKIE_SECURE = True  # Ensures session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True # Ensures CSRF tokens are only sent over HTTPS
+
+AXES_FAILURE_LIMIT = 5  # Max attempts before lockout
+AXES_LOCKOUT_TIME = timedelta(hours=1)  # Lockout for 1 hour
+
+AUTHENTICATION_BACKENDS = (
+    'axes.backends.AxesStandaloneBackend',  # Tracks failed login attempts
+    'django.contrib.auth.backends.ModelBackend',  # Default Django backend for user authentication
+)
