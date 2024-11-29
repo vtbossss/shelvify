@@ -1,3 +1,6 @@
+# **Inventory System - Shelvify**
+
+This directory contains the core functionality and settings of the **Shelvify Inventory Management System**. It includes the main project configuration files, Django settings, and essential components for the application to run.
 
 ---
 
