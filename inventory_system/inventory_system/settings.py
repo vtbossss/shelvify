@@ -22,11 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security Settings
 # ==============================
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-4p6xqpz7$0&j@ajy)(@yw)&tfq4oahnix^3np@w8s#bo#a$m6#"
+import os
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Set to False in production
+# Accessing the environment variables
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'defaultsecretkey')
 
 # Allowed hosts for the app (should be set to a list of domains/hostnames in production)
 ALLOWED_HOSTS = []

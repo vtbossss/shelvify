@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    command: /bin/bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app  # Mount the current directory as a volume
+    ports:
+      - "8000:8000"  # Expose port 8000 for Django
+    env_file:
+      - .env  # Load environment variables from .env file
+
+volumes:
+  # Define a volume for SQLite database (ensure persistence across container restarts)
+  sqlite_data:
