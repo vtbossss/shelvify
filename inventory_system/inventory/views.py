@@ -10,21 +10,27 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Inventory
 from .serializers import UserSerializer, InventorySerializer
 from .permissions import IsAdmin, IsManager, IsStaff
-from .forms import InventoryForm, UserForm
-
-
+from .forms import InventoryForm, UserForm, RegistrationForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+
+
+# Get the User model
 User = get_user_model()
-# User Management View (API)
+
+
+# User Management View (API) - Admin can view and update roles
 class UserManagementView(APIView):
-    permission_classes = [IsAuthenticated,IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
+        """ Get all users """
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk):
+        """ Update user's role (only Admin can do this) """
         try:
             user = User.objects.get(pk=pk)
             new_role = request.data.get('role', user.role)
@@ -38,14 +44,13 @@ class UserManagementView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# Inventory View (API)
-from rest_framework import permissions
 
+# Inventory View (API) - View, add, update, or delete inventory items
 class InventoryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Admin, Manager, and Staff can view all items
+        """ View inventory items for Admin, Manager, or Staff """
         if request.user.role in ['Admin', 'Manager', 'Staff']:
             items = Inventory.objects.all()
         else:
@@ -55,7 +60,7 @@ class InventoryView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        # Only Admins can add inventory items
+        """ Add inventory item (only Admin) """
         if request.user.role != 'Admin':
             return Response({'error': 'Only Admins can add inventory items'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -67,7 +72,7 @@ class InventoryView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
-        # Managers can update inventory items, but not add or delete
+        """ Update inventory item (Admin/Manager only) """
         if request.user.role not in ['Admin', 'Manager']:
             return Response({'error': 'Only Admins and Managers can update items'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -76,7 +81,7 @@ class InventoryView(APIView):
         except Inventory.DoesNotExist:
             return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Ensure Managers cannot update restricted fields
+        # Ensure Managers cannot modify restricted fields
         if request.user.role == 'Manager' and 'updated_by' in request.data:
             return Response({'error': 'Managers cannot modify the "updated_by" field'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -88,7 +93,7 @@ class InventoryView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        # Only Admins can delete items
+        """ Delete inventory item (only Admin) """
         if request.user.role != 'Admin':
             return Response({'error': 'Only Admins can delete items'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -100,13 +105,12 @@ class InventoryView(APIView):
             return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# Login View
+# Login View - Authenticate user and set JWT tokens in cookies
 def login_view(request):
-    User = get_user_model()
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+
         # Authenticate user
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -124,36 +128,37 @@ def login_view(request):
             return JsonResponse({'error': 'Invalid credentials'}, status=400)
     return render(request, 'inventory/login.html')
 
-# User Management (Admin-only view)
+
+# User Management View (Admin-only) - List all users
 def user_management_view(request):
-    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
         return redirect('permission_denied')
-    
+
     users = User.objects.all()
     return render(request, 'inventory/user_management.html', {'users': users, 'user': request.user})
 
-# Inventory List (View for all users)
+
+# Inventory List View - View inventory based on user role
 def inventory_list_view(request):
-    
     if not request.user.is_authenticated:
         return redirect('login')
-    
+
     if request.user.role == 'Admin':
         items = Inventory.objects.all()
-    elif request.user.role == 'Manager' or request.user.role == 'Staff':
+    elif request.user.role in ['Manager', 'Staff']:
         items = Inventory.objects.all()
-    
+
     return render(request, 'inventory/inventory_list.html', {
         'inventory_items': items,
         'user': request.user  # Pass the user object to the template for role-based logic
     })
 
-# Add Inventory (Admin-only view)
+
+# Add Inventory View - Add inventory item (only Admin)
 def add_inventory_view(request):
     if not request.user.is_authenticated or request.user.role != 'Admin':
         return redirect('permission_denied')
-    
+
     if request.method == 'POST':
         form = InventoryForm(request.POST)
         if form.is_valid():
@@ -161,27 +166,27 @@ def add_inventory_view(request):
             return redirect('inventory_list')
     else:
         form = InventoryForm()
-    
+
     return render(request, 'inventory/add_inventory.html', {'form': form, 'user': request.user})
 
-# Logout View (Clears JWT cookies)
+
+# Logout View - Clears JWT cookies
 def logout_view(request):
     if request.user.is_authenticated:
-        # Clear the session (if using session-based auth)
-        django_logout(request)  # This clears the Django session
-        
+        django_logout(request)  # Clears the Django session
+
         response = redirect('login')
         response.delete_cookie('access_token')  # Delete access token cookie
         response.delete_cookie('refresh_token')  # Delete refresh token cookie
         return response
     return redirect('login')
 
-# Home View (Displays information based on user role)
+
+# Home View - Displays information based on user role
 def home_view(request):
-    User = get_user_model()
     if not request.user.is_authenticated:
-        return render(request,'inventory/basichome.html')  # Redirect to login if not authenticated
-    
+        return render(request, 'inventory/basichome.html')  # Redirect to login if not authenticated
+
     # Logic for different roles
     if request.user.role == 'Admin':
         total_users = User.objects.count()
@@ -210,12 +215,13 @@ def home_view(request):
         })
     else:
         return redirect('login')
-# Edit User View
+
+
+# Edit User View - Edit user (Admin only)
 def edit_user(request, user_id):
-    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
-        return redirect('permission_denied')  # Redirect if not an admin
-    
+        return redirect('permission_denied')
+
     user = get_object_or_404(User, id=user_id)  # Fetch user by ID
     if request.method == 'POST':
         form = UserForm(request.POST, instance=user)  # Bind form to existing user instance
@@ -225,16 +231,15 @@ def edit_user(request, user_id):
             return redirect('user_management_template')  # Redirect to user management page
     else:
         form = UserForm(instance=user)  # Display form with existing data
-    
+
     return render(request, 'inventory/edit_user.html', {'form': form, 'user': user})
 
-# Delete User View
 
+# Delete User View - Admin can delete users
 def delete_user(request, user_id):
-    User = get_user_model()
     if not request.user.is_authenticated or request.user.role != 'Admin':
-        return redirect('permission_denied')  # Redirect if not an admin
-    
+        return redirect('permission_denied')
+
     try:
         user = get_object_or_404(User, id=user_id)  # Fetch user by ID
         user.delete()  # Delete user
@@ -244,47 +249,28 @@ def delete_user(request, user_id):
         messages.error(request, 'User not found.')
         return redirect('user_management_template')  # Redirect to user management page
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
 
-
-# Check if the user is an Admin
-def is_admin(user):
-    return user.is_authenticated and user.role == 'Admin'
-
-@login_required
-@user_passes_test(is_admin)
-def user_management_view(request):
-    User = get_user_model()
-    users = User.objects.all()
-    return render(request, 'inventory/user_management.html', {'users': users})
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Inventory
-from .forms import InventoryForm
-
+# Edit Inventory View - Admin and Manager can edit inventory items
 @login_required
 def edit_inventory_view(request, item_id):
-    # Allow both Admins and Managers to edit inventory
     if request.user.role not in ['Admin', 'Manager']:
-        return redirect('inventory_list')  # Only Admins and Managers can edit
+        return redirect('permission_denied')
 
-    item = get_object_or_404(Inventory, id=item_id)
+    inventory_item = get_object_or_404(Inventory, id=item_id)
     if request.method == 'POST':
-        form = InventoryForm(request.POST, instance=item)
+        form = InventoryForm(request.POST, instance=inventory_item)
         if form.is_valid():
             form.save()
             return redirect('inventory_list')
     else:
-        form = InventoryForm(instance=item)
+        form = InventoryForm(instance=inventory_item)
 
-    return render(request, 'inventory/edit_inventory.html', {'form': form, 'item': item})
+    return render(request, 'inventory/edit_inventory.html', {'form': form, 'inventory_item': inventory_item})
 
+
+# Permissions - Page for denying permission access
+def permission_denied(request):
+    return render(request, 'inventory/permission_denied.html')
 
 @login_required
 def delete_inventory_view(request, item_id):
@@ -298,15 +284,6 @@ def delete_inventory_view(request, item_id):
 
     return render(request, 'inventory/delete_inventory.html', {'item': item})
 
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import RegistrationForm
-from django.contrib.auth.models import User
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import RegistrationForm
 
 def register_view(request):
     if request.method == 'POST':
@@ -325,5 +302,4 @@ def register_view(request):
         form = RegistrationForm()
 
     return render(request, 'inventory/register.html', {'form': form})
-
 

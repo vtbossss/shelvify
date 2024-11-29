@@ -3,19 +3,27 @@
 {% block title %}Add Inventory{% endblock %}
 
 {% block content %}
+<!-- Main container for the Add Inventory page -->
 <div class="container mt-5">
+    <!-- Card for the form section -->
     <div class="card shadow-sm">
+        <!-- Card header with title -->
         <div class="card-header bg-primary text-white text-center">
-            <h2>Add New Inventory Item</h2>
+            <h2>Add New Inventory Item</h2>  <!-- Heading for the page -->
         </div>
+        <!-- Card body with form content -->
         <div class="card-body">
+            <!-- Form to add a new inventory item, using POST method -->
             <form method="POST">
-                {% csrf_token %}
+                {% csrf_token %}  <!-- CSRF token for security -->
+                <!-- Inventory form fields rendered as paragraphs -->
                 <div class="mb-3">
-                    {{ form.as_p }}
+                    {{ form.as_p }}  <!-- Render form fields dynamically -->
                 </div>
+                <!-- Submit button to add the item -->
                 <button type="submit" class="btn btn-success w-100">Add Item</button>
             </form>
+            <!-- Back button to go to the inventory list page -->
             <div class="text-center mt-4">
                 <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Back to Inventory List</a>
             </div>

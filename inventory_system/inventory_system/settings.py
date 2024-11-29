@@ -11,25 +11,30 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# ==============================
+# Security Settings
+# ==============================
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-4p6xqpz7$0&j@ajy)(@yw)&tfq4oahnix^3np@w8s#bo#a$m6#"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # Set to False in production
 
+# Allowed hosts for the app (should be set to a list of domains/hostnames in production)
 ALLOWED_HOSTS = []
 
 
+# ==============================
 # Application definition
+# ==============================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,9 +43,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
-    'inventory',
-    'rest_framework_simplejwt',
+    'rest_framework',  # Django Rest Framework for API handling
+    'inventory',  # Your custom app for inventory management
+    'rest_framework_simplejwt',  # JWT authentication for API security
 ]
 
 MIDDLEWARE = [
@@ -51,16 +56,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'inventory.middleware.JWTAuthenticationMiddleware'
+    'inventory.middleware.JWTAuthenticationMiddleware',  # Custom middleware for JWT handling
 ]
 
-ROOT_URLCONF = "inventory_system.urls"
+ROOT_URLCONF = "inventory_system.urls"  # URL configuration for the project
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
-        "APP_DIRS": True,
+        "DIRS": [BASE_DIR / 'templates'],  # Path to templates directory
+        "APP_DIRS": True,  # Allow loading templates from app directories
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -72,23 +77,27 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "inventory_system.wsgi.application"
+WSGI_APPLICATION = "inventory_system.wsgi.application"  # WSGI application entry point
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# ==============================
+# Database Configuration
+# ==============================
 
+# Database settings for SQLite (use PostgreSQL or MySQL in production)
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.sqlite3",  # Database engine
+        "NAME": BASE_DIR / "db.sqlite3",  # Database file location
     }
 }
 
 
+# ==============================
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# ==============================
 
+# Password validation settings to enforce secure passwords
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -105,57 +114,79 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
+# ==============================
+# Localization Settings
+# ==============================
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-us"  # Set language to English (US)
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "UTC"  # Set timezone to UTC (change to your local timezone if needed)
 
-USE_I18N = True
+USE_I18N = True  # Enable internationalization
 
-USE_TZ = True
+USE_TZ = True  # Enable timezone support
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# ==============================
+# Static and Media Files
+# ==============================
 
-STATIC_URL = "static/"
+STATIC_URL = "static/"  # URL for static files (CSS, JS, images)
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Adjust if necessary, based on where your static folder is located
+    BASE_DIR / 'static',  # Path to static files directory
 ]
 
+
+# ==============================
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+# ==============================
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"  # Default auto field type for primary keys
 
+
+# ==============================
+# Django Rest Framework (DRF) Settings
+# ==============================
+
+# REST framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT authentication for API endpoints
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',  # Ensure all API views require authentication
     ],
 }
 
+
+# ==============================
+# Custom User Model
+# ==============================
+
+# Use a custom user model from the 'inventory' app
 AUTH_USER_MODEL = 'inventory.User'
 
-from datetime import timedelta
+
+# ==============================
+# Simple JWT (JSON Web Token) Settings
+# ==============================
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Extend token expiration time
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token expiration
-    'ROTATE_REFRESH_TOKENS': True,  # Enable refresh token rotation
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token lifetime (30 minutes)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token lifetime (1 day)
+    'ROTATE_REFRESH_TOKENS': True,  # Enable rotation of refresh tokens
     'BLACKLIST_AFTER_ROTATION': True,  # Blacklist old refresh tokens after rotation
 }
 
-# settings.py
+
+# ==============================
+# Session Settings
+# ==============================
 
 # Ensure the session expires when the browser is closed (if using Django sessions)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Configure other session settings to ensure compatibility with JWT
 SESSION_COOKIE_AGE = 3600  # Cookie expiration time (in seconds)
-SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True  # Made the session cookie HTTP-only for security

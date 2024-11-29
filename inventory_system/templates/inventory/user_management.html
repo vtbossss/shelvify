@@ -22,7 +22,9 @@
                 <td>
                     {% if user.role != 'Admin' %}
                     <!-- Edit Button -->
-                    <a href="{% url 'edit_user' user.id %}" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="{% url 'edit_user' user.id %}" class="btn btn-info btn-sm">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
                     <!-- Delete Button with Confirmation -->
                     <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm" onclick="return confirmDelete(event, '{{ user.username }}')">
                         <i class="fas fa-trash"></i> Delete
@@ -35,7 +37,9 @@
     </table>
 
     <div class="text-center mt-3">
-        <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-home"></i> Back to Home</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
     </div>
 </div>
 

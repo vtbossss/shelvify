@@ -3,15 +3,22 @@
 {% block title %}Delete Inventory{% endblock %}
 
 {% block content %}
+<!-- Main Container -->
 <div class="container mt-5">
+    <!-- Page Heading -->
     <h1 class="text-center mb-4">Delete Inventory Item</h1>
+    
+    <!-- Confirmation Message -->
     <p class="text-center fs-5 mt-3">
         Are you sure you want to delete "<strong>{{ item.name }}</strong>"?
     </p>
 
+    <!-- Form for Deletion Confirmation -->
     <form method="POST" class="text-center mt-4">
         {% csrf_token %}
+        <!-- Submit Button for Deletion -->
         <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <!-- Cancel Button -->
         <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>

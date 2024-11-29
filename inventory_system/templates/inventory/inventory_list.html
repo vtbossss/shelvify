@@ -3,17 +3,22 @@
 {% block title %}Inventory List - Inventory Management{% endblock %}
 
 {% block content %}
+<!-- Inventory List Container -->
 <div class="container mt-5">
+    <!-- Page Title -->
     <h1 class="text-center mb-4">Inventory List</h1>
-    
+
+    <!-- Add New Item Button (Visible to Admin) -->
     {% if user.role == 'Admin' %}
     <div class="mb-4">
         <a href="{% url 'add_inventory' %}" class="btn btn-primary">Add New Item</a>
     </div>
     {% endif %}
 
+    <!-- Inventory Table -->
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
+            <!-- Table Header -->
             <thead class="table-dark">
                 <tr>
                     <th>Name</th>
@@ -24,6 +29,8 @@
                     {% endif %}
                 </tr>
             </thead>
+
+            <!-- Table Body -->
             <tbody>
                 {% for item in inventory_items %}
                 <tr>
@@ -32,6 +39,7 @@
                     <td>{{ item.section }}</td>
                     {% if user.role == 'Admin' or user.role == 'Manager' %}
                     <td>
+                        <!-- Action Buttons for Admin -->
                         {% if user.role == 'Admin' %}
                         <a href="{% url 'edit_inventory' item.id %}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Edit
@@ -39,6 +47,7 @@
                         <a href="{% url 'delete_inventory' item.id %}" class="btn btn-danger btn-sm">
                             <i class="fas fa-trash-alt"></i> Delete
                         </a>
+                        <!-- Action Buttons for Manager -->
                         {% elif user.role == 'Manager' %}
                         <a href="{% url 'edit_inventory' item.id %}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Edit
@@ -52,6 +61,7 @@
         </table>
     </div>
 
+    <!-- Back to Home Button -->
     <div class="text-center mt-3">
         <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
     </div>
@@ -60,57 +70,58 @@
 
 {% block extra_head %}
 <style>
-    /* Table Styles */
+    /* Inventory List Table Styling */
+
+    /* Striped Rows */
     .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #343a40 !important; /* Darken odd rows */
+        background-color: #343a40 !important; /* Dark gray for odd rows */
     }
-
     .table-striped tbody tr:nth-of-type(even) {
-        background-color: #444 !important; /* Darken even rows */
+        background-color: #444 !important; /* Slightly lighter dark gray for even rows */
     }
 
+    /* Bordered Table Cells */
     .table-bordered th, .table-bordered td {
         border-color: #dee2e6 !important;
-        color: #fff !important; /* Ensure text is white on dark mode */
+        color: #fff !important; /* White text for better contrast */
     }
 
+    /* Dark Table Header */
     .table-dark th {
         background-color: #212529 !important;
         color: #fff !important;
     }
 
+    /* Dark Table Body Rows */
     .table-dark tbody tr {
         background-color: #343a40 !important;
     }
 
+    /* Button Styling */
     .btn-primary {
         background-color: #007bff !important;
         border-color: #007bff !important;
     }
-
     .btn-warning {
         background-color: #ffc107 !important;
         border-color: #ffc107 !important;
     }
-
     .btn-danger {
         background-color: #dc3545 !important;
         border-color: #dc3545 !important;
     }
-
     .btn-secondary {
         background-color: #6c757d !important;
         border-color: #6c757d !important;
     }
-
     .btn-sm {
-        font-size: 14px !important;
+        font-size: 14px !important; /* Smaller buttons */
     }
 
+    /* Text Alignment and Container Padding */
     .text-center {
         text-align: center !important;
     }
-
     .container {
         padding-left: 15px !important;
         padding-right: 15px !important;

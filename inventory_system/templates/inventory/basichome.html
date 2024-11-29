@@ -1,24 +1,24 @@
 {% extends "inventory/base.html" %}
 
-{% block title %}Welcome - Inventory Management{% endblock %}
+{% block title %}Welcome - Shelvify Inventory Management{% endblock %}
 
 {% block content %}
-<!-- Main Container -->
+<!-- Fullscreen Container -->
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100 bg-gradient">
     <!-- Welcome Card -->
-    <div class="card shadow-lg p-5 text-white" style="max-width: 600px; width: 100%; border-radius: 15px; background: rgba(0, 0, 0, 0.7);">
+    <div class="card shadow-lg text-white" style="max-width: 600px; width: 100%; border-radius: 15px; background: rgba(0, 0, 0, 0.8); padding: 40px;">
         <div class="card-body text-center">
-            <h1 class="display-4 font-weight-bold mb-4">Welcome to Shelvify</h1>
-            <p class="lead mb-5">Manage your inventory with ease. Stay on top of your stock, streamline your processes, and grow your business with us!</p>
+            <h1 class="display-4 mb-4">Welcome to Shelvify</h1>
+            <p class="lead mb-5">Effortlessly manage your inventory, streamline operations, and drive growth with Shelvify!</p>
 
-            <!-- Call to Action Links -->
-            <div class="mt-4">
-                <a href="{% url 'login' %}" class="btn btn-primary btn-lg mr-3" style="border-radius: 30px; padding: 15px 30px; font-size: 18px;">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg" style="border-radius: 30px; padding: 15px 30px; font-size: 18px;">Register</a>
+            <!-- Call-to-Action Buttons -->
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg" style="border-radius: 30px; padding: 15px 30px;">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg" style="border-radius: 30px; padding: 15px 30px;">Register</a>
             </div>
 
-            <!-- Option to Register if Not Logged In -->
-            <p class="mt-4 text-light">New here? <a href="{% url 'register' %}" class="text-light font-weight-bold">Create an account</a> to get started!</p>
+            <!-- Additional Prompt for New Users -->
+            <p class="mt-4">New here? <a href="{% url 'register' %}" class="text-light fw-bold">Create an account</a> to get started!</p>
         </div>
     </div>
 </div>
@@ -26,63 +26,54 @@
 
 {% block extra_head %}
 <style>
-    /* Gradient Background */
+    /* Background Gradient */
     .bg-gradient {
-        background: linear-gradient(to right, #4e73df, #1cc88a) !important;
+        background: linear-gradient(to right, #4e73df, #1cc88a);
     }
 
-    /* Main Text Styles */
+    /* Typography */
     .display-4 {
-        font-size: 3.5rem;
+        font-size: 3rem;
         font-weight: 700;
     }
 
     .lead {
         font-size: 1.25rem;
-        font-weight: 300;
+        font-weight: 400;
     }
 
-    /* Card Styling */
+    /* Card Design */
     .card {
-        background: rgba(0, 0, 0, 0.7) !important;
+        background: rgba(0, 0, 0, 0.8);
+        border: none;
         border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     }
 
-    .card-body {
-        text-align: center;
-    }
-
-    /* Button Styling */
+    /* Button Styles */
     .btn-primary {
         background-color: #007bff;
-        border-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease;
     }
 
     .btn-primary:hover {
         background-color: #0056b3;
-        border-color: #004085;
     }
 
     .btn-outline-light {
-        border-color: #ffffff;
-        color: #ffffff;
+        border: 2px solid #fff;
+        color: #fff;
+        transition: all 0.3s ease;
     }
 
     .btn-outline-light:hover {
-        background-color: #ffffff;
-        color: #212529;
+        background-color: #fff;
+        color: #121212;
     }
 
-    /* Text Styling for Links */
-    .text-light {
-        color: #f8f9fa !important;
-    }
-
-    .text-light:hover {
-        color: #ffffff;
-    }
-
-    /* Responsive Design */
+    /* Responsive Adjustments */
     @media (max-width: 576px) {
         .display-4 {
             font-size: 2.5rem;
@@ -94,7 +85,7 @@
 
         .btn-lg {
             font-size: 16px;
-            padding: 12px 25px;
+            padding: 12px 20px;
         }
     }
 </style>

@@ -3,18 +3,23 @@
 {% block title %}Home - Inventory Management{% endblock %}
 
 {% block content %}
+<!-- Main Dashboard Container -->
 <div class="container dashboard my-4">
+    <!-- Welcome Message -->
     <h1 class="text-center mb-4">Welcome, {{ user.username }}</h1>
 
     <!-- Role-Specific Dashboards -->
     {% if role == 'Admin' %}
+        <!-- Admin Dashboard -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 Admin Dashboard <i class="fas fa-tachometer-alt"></i>
             </div>
             <div class="card-body">
+                <!-- Admin Statistics -->
                 <p class="total-users">Total Users: {{ total_users }}</p>
                 <p class="total-items">Total Inventory Items: {{ total_inventory_items }}</p>
+                <!-- Admin Actions -->
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{% url 'inventory_list' %}" class="btn btn-success">
                         <i class="fas fa-boxes"></i> View Inventory
@@ -26,19 +31,22 @@
             </div>
         </div>
     {% elif role == 'Manager' %}
+        <!-- Manager Dashboard -->
         <div class="card mb-4">
             <div class="card-header bg-info text-white">
                 Manager Dashboard <i class="fas fa-user-cog"></i>
             </div>
             <div class="card-body">
-                <h5>Managed Inventory:</h5>
+                <!-- Managed Inventory Summary -->
+                <h5 class="inventory-dark-text">Managed Inventory</h5>
                 <p class="total-items">Total Inventory Items: {{ total_inventory_items }}</p>
+                <!-- List of Inventory Managed -->
                 <ul class="inventory-list list-unstyled">
                     {% for item in managed_inventory %}
                         <li><strong>{{ item.name }}</strong> - Quantity: {{ item.quantity }}</li>
                     {% endfor %}
-                    
                 </ul>
+                <!-- Manager Actions -->
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{% url 'inventory_list' %}" class="btn btn-success">
                         <i class="fas fa-boxes"></i> View Inventory
@@ -47,18 +55,20 @@
             </div>
         </div>
     {% elif role == 'Staff' %}
+        <!-- Staff Dashboard -->
         <div class="card mb-4">
             <div class="card-header bg-secondary text-white">
                 Staff Dashboard <i class="fas fa-clipboard-list"></i>
             </div>
             <div class="card-body">
-                <h5>Inventory(view only)</h5>
+                <!-- Inventory View for Staff -->
+                <h5 class="inventory-dark-text">Inventory (View Only)</h5>
                 <ul class="inventory-list list-unstyled">
                     {% for item in section_inventory %}
                         <li><strong>{{ item.name }}</strong> - Quantity: {{ item.quantity }}</li>
                     {% endfor %}
-
                 </ul>
+                <!-- Staff Actions -->
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{% url 'inventory_list' %}" class="btn btn-success">
                         <i class="fas fa-boxes"></i> View Inventory
@@ -67,6 +77,7 @@
             </div>
         </div>
     {% else %}
+        <!-- Invalid Role Alert -->
         <div class="alert alert-danger" role="alert">
             Invalid role. Please log in again.
         </div>
@@ -83,41 +94,48 @@
 
 {% block extra_head %}
 <style>
-    /* Add important styles */
+    /* Dashboard Specific Styles */
+    
+    /* Statistic Styling */
     .total-users, .total-items {
         font-weight: bold !important;
         color: #28a745 !important;
     }
 
+    /* Button Styles */
     .btn-success {
         background-color: #28a745 !important;
         border-color: #28a745 !important;
     }
-
     .btn-warning {
         background-color: #ffc107 !important;
         border-color: #ffc107 !important;
     }
 
+    /* Alert Style */
     .alert-danger {
         background-color: #dc3545 !important;
         color: white !important;
     }
 
-    .card-header, .card-body {
+    /* Card Header and Body Styling */
+    .card-header {
+        font-size: 18px !important;
+        color: white !important;
+        padding: 15px !important;
+    }
+    .card-body {
         font-size: 16px !important;
         padding: 15px !important;
     }
 
+    /* Inventory List Items */
     .inventory-list li {
         font-size: 14px !important;
         color: #6c757d !important;
     }
-
-    /* Ensure important visibility for card text and headers */
-    .card-header, .card-body {
-        font-size: 18px !important;
-        color: white !important;
+    .inventory-dark-text {
+        color: #343a40 !important; /* Dark text color */
     }
 </style>
 {% endblock %}

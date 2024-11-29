@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Shelvify{% endblock %}</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome for icons usage -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts for font styling -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Dark Mode Background */
+        /* Styling for the entire page with dark mode theme */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #121212; /* Dark background */
@@ -25,7 +25,7 @@
             padding: 0;
         }
 
-        /* Navbar styling for dark mode */
+        /* Dark mode navbar styling */
         nav.navbar {
             background-color: #1f1f1f; /* Dark navbar */
             margin-bottom: 20px;
@@ -40,7 +40,7 @@
         .navbar-nav .nav-link {
             padding: 10px 15px;
             font-weight: 600;
-            color: #b0b0b0; /* Light gray text */
+            color: #b0b0b0; /* Light gray text for links */
         }
 
         .navbar-nav .nav-link:hover {
@@ -52,7 +52,7 @@
             color: #007bff !important; /* Highlight active link */
         }
 
-        /* Content container styling */
+        /* Content area styling */
         .content-container {
             padding: 20px;
             background-color: #1f1f1f; /* Dark background for content */
@@ -66,7 +66,7 @@
             color: #121212; /* Dark text for alerts */
         }
 
-        /* Footer styling */
+        /* Footer area styling */
         footer {
             background-color: #1f1f1f; /* Dark footer */
             color: #b0b0b0; /* Light text for footer */
@@ -74,7 +74,7 @@
             text-align: center;
         }
 
-        /* Button styling */
+        /* Button styling for hover effect */
         .btn {
             transition: background-color 0.3s ease;
         }
@@ -93,6 +93,7 @@
             border-color: #0056b3;
         }
 
+        /* Red alert background color */
         .alert {
             background-color: #f44336; /* Red alert background */
             color: white;
@@ -103,34 +104,36 @@
 
 <body>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation Bar with links to different pages -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
+            <!-- Brand Name with Home link -->
             <a class="navbar-brand" href="{% url 'home' %}">Shelvify</a>
+            <!-- Navbar toggle button for mobile view -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Home link -->
+                    <!-- Home link with active class for current page -->
                     <li class="nav-item {% if request.path == '/' or request.path == '/home/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
-                    
-                    <!-- Inventory link -->
+
+                    <!-- Inventory link with active class for current page -->
                     <li class="nav-item {% if request.path|slice:":10" == '/inventory' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'inventory_list' %}">Inventory</a>
                     </li>
-                    
-                    <!-- User Management link (only for Admins) -->
+
+                    <!-- User Management link only visible to Admins -->
                     {% if user.role == 'Admin' %}
                     <li class="nav-item {% if request.path|slice:":16" == '/user-management' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'user_management_template' %}">User Management</a>
                     </li>
                     {% endif %}
-                    
-                    <!-- Login/Logout/Register links -->
+
+                    <!-- Login/Logout/Register links based on authentication status -->
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -147,19 +150,18 @@
             </div>
         </div>
     </nav>
-    
 
-    <!-- Main Content -->
+    <!-- Main content container -->
     <div class="content-container">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Footer -->
+    <!-- Footer with copyright information -->
     <footer>
         <p>&copy; {{ current_year }} Inventory Management. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
+    <!-- JavaScript includes for jQuery, Bootstrap, and Popper.js -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

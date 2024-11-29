@@ -1,13 +1,13 @@
 {% extends "inventory/base.html" %}
 
-{% block title %}Register - Inventory Management{% endblock %}
+{% block title %}Register - Shelvify{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center vh-100 bg-dark">
     <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%; background-color: #343a40;">
         <div class="card-body">
             
-            <!-- Display Non-Field Errors (e.g., Password Mismatch or Duplicate User) -->
+            <!-- Display Non-Field Errors -->
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">
                     {% for error in form.non_field_errors %}
@@ -16,7 +16,7 @@
                 </div>
             {% endif %}
 
-            <!-- Display Field-Specific Errors -->
+            <!-- Registration Form -->
             <form method="POST">
                 {% csrf_token %}
                 
@@ -81,51 +81,52 @@
 
 {% block extra_head %}
 <style>
-    /* Background Color */
-    body {
+    /* Dark Background */
+    .bg-dark {
         background-color: #212529 !important;
     }
 
-    /* Text Styling */
-    .text-white {
-        color: white !important;
+    /* Card Styles */
+    .card {
+        background-color: #343a40 !important;
+        border-radius: 10px;
+        border-color: #444 !important;
     }
 
-    /* Form input fields */
+    /* Form Fields */
     .form-control {
         background-color: #495057 !important;
         color: white !important;
-        border-radius: 5px !important;
-        border-color: #444 !important;
+        border-radius: 5px;
+        border: 1px solid #444;
     }
 
     .form-control::placeholder {
         color: #ced4da;
     }
 
-    /* Button Styling */
+    /* Buttons */
     .btn-primary {
         background-color: #007bff !important;
-        border-color: #007bff !important;
-        border-radius: 5px !important;
+        border-color: #007bff;
+        border-radius: 5px;
     }
 
-    /* Alert Message Styling */
-    .alert {
-        color: white !important;
-    }
-
+    /* Alert Styling */
     .alert-danger {
         background-color: #dc3545 !important;
+        color: white;
+        border-radius: 5px;
     }
 
-    .alert-success {
-        background-color: #28a745 !important;
-    }
-
-    /* Ensure content is centered */
+    /* Vertical Center */
     .vh-100 {
         height: 100vh !important;
+    }
+
+    /* White Text */
+    .text-white {
+        color: white !important;
     }
 </style>
 {% endblock %}

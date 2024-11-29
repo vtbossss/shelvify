@@ -3,30 +3,53 @@
 {% block title %}Login - Inventory Management{% endblock %}
 
 {% block content %}
+<!-- Full-Screen Background Container -->
 <div class="d-flex justify-content-center align-items-center vh-100 bg-dark">
+    <!-- Login Card -->
     <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%; background-color: #343a40;">
         <div class="card-body">
-            <!-- Static Alert Message -->
+            <!-- Informational Alert -->
             <div class="alert alert-info text-center mb-4">
                 <strong>Please login to get started.</strong>
             </div>
 
+            <!-- Login Form -->
             <form method="POST">
                 {% csrf_token %}
                 
+                <!-- Username Field -->
                 <div class="mb-3">
                     <label for="username" class="form-label text-white">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" required placeholder="Enter your username" style="background-color: #495057; color: white;">
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control" 
+                        required 
+                        placeholder="Enter your username" 
+                        style="background-color: #495057; color: white;"
+                    >
                 </div>
 
+                <!-- Password Field -->
                 <div class="mb-3">
                     <label for="password" class="form-label text-white">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" required placeholder="Enter your password" style="background-color: #495057; color: white;">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-control" 
+                        required 
+                        placeholder="Enter your password" 
+                        style="background-color: #495057; color: white;"
+                    >
                 </div>
 
+                <!-- Login Button -->
                 <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
             </form>
 
+            <!-- Error Message -->
             {% if error %}
             <div class="alert alert-danger mt-3 text-center">
                 {{ error }}
@@ -35,7 +58,9 @@
 
             <!-- Register Link -->
             <div class="text-center mt-3">
-                <a href="{% url 'register' %}" class="text-white">Don't have an account? <strong>Register here</strong></a>
+                <a href="{% url 'register' %}" class="text-white">
+                    Don't have an account? <strong>Register here</strong>
+                </a>
             </div>
         </div>
     </div>
@@ -44,63 +69,62 @@
 
 {% block extra_head %}
 <style>
-    /* Background Color */
+    /* Full-Screen Dark Background */
     .bg-dark {
-        background-color: #212529 !important;
+        background-color: #212529 !important; /* Dark gray background */
     }
 
     /* Card Styling */
     .card {
-        background-color: #343a40 !important;
-        border-radius: 10px !important;
-        border-color: #444 !important;
+        background-color: #343a40 !important; /* Slightly lighter dark gray */
+        border-radius: 10px !important; /* Rounded corners */
+        border-color: #444 !important; /* Border color */
     }
 
-    /* Padding inside card */
+    /* Card Padding */
     .card-body {
-        padding: 2rem !important;
+        padding: 2rem !important; /* Uniform padding */
     }
 
-    /* Form input fields */
+    /* Form Input Fields */
     .form-control {
-        background-color: #495057 !important;
-        color: white !important;
-        border-radius: 5px !important;
+        background-color: #495057 !important; /* Medium gray background */
+        color: white !important; /* White text */
+        border-radius: 5px !important; /* Rounded input corners */
     }
-
     .form-control::placeholder {
-        color: #ced4da;
+        color: #ced4da; /* Placeholder text color */
     }
 
-    /* Text Styling */
-    .text-white {
-        color: white !important;
+    /* Labels for Input Fields */
+    .form-label {
+        color: white !important; /* White label text */
     }
 
-    /* Button Styling */
+    /* Buttons */
     .btn-primary {
-        background-color: #007bff !important;
-        border-color: #007bff !important;
-        border-radius: 5px !important;
+        background-color: #007bff !important; /* Bootstrap primary blue */
+        border-color: #007bff !important; /* Border matches background */
+        border-radius: 5px !important; /* Rounded button corners */
     }
 
-    /* Alert Message Styling */
+    /* Informational Alert Styling */
     .alert-info {
-        background-color: #17a2b8 !important;
-        color: white !important;
-        border-radius: 5px !important;
+        background-color: #17a2b8 !important; /* Bootstrap info blue */
+        color: white !important; /* White alert text */
+        border-radius: 5px !important; /* Rounded alert corners */
     }
 
-    /* Alert Message Styling for Error */
+    /* Error Alert Styling */
     .alert-danger {
-        background-color: #dc3545 !important;
-        color: white !important;
-        border-radius: 5px !important;
+        background-color: #dc3545 !important; /* Bootstrap danger red */
+        color: white !important; /* White alert text */
+        border-radius: 5px !important; /* Rounded alert corners */
     }
 
-    /* Ensure content is centered */
+    /* Full-Height Vertical Centering */
     .vh-100 {
-        height: 100vh !important;
+        height: 100vh !important; /* 100% viewport height */
     }
 </style>
 {% endblock %}

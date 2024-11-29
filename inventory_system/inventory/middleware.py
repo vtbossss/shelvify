@@ -1,31 +1,35 @@
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.models import AnonymousUser
-from django.utils.deprecation import MiddlewareMixin
 
 class JWTAuthenticationMiddleware:
     def __init__(self, get_response):
-        self.get_response = get_response
+        self.get_response = get_response  # Initialize the middleware with the next response handler
 
     def __call__(self, request):
-        # Retrieve the access token from cookies
+        # Retrieve the access token from the cookies. It's assumed the token is stored securely in the cookie.
         access_token = request.COOKIES.get('access_token')
         
         if access_token:
             try:
-                # Decode and validate the access token
+                # Decode and validate the access token using the simplejwt AccessToken class
                 token = AccessToken(access_token)
-                user_id = token['user_id']
+                user_id = token['user_id']  # Extract the user ID from the decoded token
+                
+                # Ensure the user exists in the database
                 user = get_user_model().objects.get(id=user_id)
-                request.user = user  # Set the user from the token
+                
+                # Set the user in the request to be used in views or other middleware
+                request.user = user
             except Exception as e:
-                # If there's an issue with the token, set user as AnonymousUser
-                request.user = AnonymousUser()
-                # Optional: Log or handle the error here
+                # If decoding or validation fails, set the user as AnonymousUser for security
+                request.user = AnonymousUser()  # User should not be authenticated in case of errors
+                # Log the exception for debugging purposes (important for security)
                 print(f"JWT Authentication failed: {e}")
         else:
-            request.user = AnonymousUser()  # No token, set user as AnonymousUser
+            # If there's no token in the cookies, set the user as AnonymousUser (unauthenticated)
+            request.user = AnonymousUser()
 
-        # Proceed with the request
+        # Allow the request to continue to the next middleware or view
         response = self.get_response(request)
         return response
