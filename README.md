@@ -122,6 +122,49 @@ print(get_random_secret_key())
 
 After running the commands, the application will be running and accessible at `http://localhost:8000`.
 
+## **Screentshots**
+
+**Admin dashboard**
+
+
+![Admin dashboard](https://github.com/user-attachments/assets/57d9b30b-87a7-4b6b-abc4-d94cf2249d30)
+
+
+**Admin inventory page**
+
+
+![Admin inventory page](https://github.com/user-attachments/assets/e20ce0a6-cda6-42fc-8483-78b0bd45bdab)
+
+
+**Admin User management page**
+
+
+![Admin User management page](https://github.com/user-attachments/assets/c2673b20-d7b7-497b-af40-5450216ff41c)
+
+
+**User dashboard**
+
+
+![User dashboard](https://github.com/user-attachments/assets/c16c6f6b-365e-48da-b1e5-ab4623a94ccf)
+
+
+**User inventory page**
+
+
+![User inventory page](https://github.com/user-attachments/assets/530cec8a-4a33-4a08-a045-3dc11c7fbb00)
+
+
+**Manager Dashboard**
+
+
+![Manager Dashboard](https://github.com/user-attachments/assets/14ff3838-b80b-4e94-aa33-460fb75dd48b)
+
+
+**Manager Inventory Page**
+
+
+![Manager Inventory Page](https://github.com/user-attachments/assets/bd5b6216-20aa-4e02-a7f3-b526c7883c54)
+
 
 ## **Troubleshooting**
 
@@ -131,10 +174,8 @@ If you encounter any issues, consider checking the following:
 2. **Docker Not Installed**: Ensure Docker is installed and running if you're using the containerized environment.
 3. **Database Connection Issues**: Check the PostgreSQL service and ensure it's running.
 
-For any other issues, feel free to open an issue on the [GitHub repository](https://github.com/your-username/shelvify/issues).
+For any other issues, feel free to open an issue on the [GitHub repository](https://github.com/vtbossss/shelvify/issues).
 
 ---
 
-## **License**
 
-Shelvify is open-source software.
