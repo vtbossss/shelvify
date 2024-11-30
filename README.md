@@ -172,7 +172,6 @@ If you encounter any issues, consider checking the following:
 
 1. **Missing `.env` File**: Ensure the `.env` file exists and contains the correct `DJANGO_SECRET_KEY` and `DEBUG` variables.
 2. **Docker Not Installed**: Ensure Docker is installed and running if you're using the containerized environment.
-3. **Database Connection Issues**: Check the PostgreSQL service and ensure it's running.
 
 For any other issues, feel free to open an issue on the [GitHub repository](https://github.com/vtbossss/shelvify/issues).
 
