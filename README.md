@@ -122,7 +122,7 @@ print(get_random_secret_key())
 
 After running the commands, the application will be running and accessible at `http://localhost:8000`.
 
-## **Screentshots**
+## **Screenshots**
 
 **Admin dashboard**
 
